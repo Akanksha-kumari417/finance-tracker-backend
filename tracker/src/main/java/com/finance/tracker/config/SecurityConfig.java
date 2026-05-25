@@ -19,6 +19,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll() // Allow register/login
                         .requestMatchers("/api/test/**").permitAll() // Allow test endpoints
                         .requestMatchers("/api/user/**").permitAll()
+                        .requestMatchers("/api/transactions/**").permitAll()
                         .anyRequest().authenticated() // All other endpoints need authentication
                 )
                 .sessionManagement(session ->

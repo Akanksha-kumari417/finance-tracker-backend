@@ -1,5 +1,7 @@
 package com.finance.tracker.config;
 
+import com.finance.tracker.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,6 +21,9 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthFilter;
+
     @Value("${cors.allowed.origins:*}")
     private String allowedOrigins;
 
@@ -27,14 +33,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        // Public endpoints - accessible without authentication
+                        // Public endpoints
                         .requestMatchers(
-                                "/",                          // Homepage
-                                "/health",                    // Health check
-                                "/api/test/**",              // Test endpoints
-                                "/api/auth/register",        // Registration
-                                "/api/auth/login",           // Login
-                                "/error"                     // Error page
+                                "/",
+                                "/health",
+                                "/api/test/**",
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/error"
                         ).permitAll()
 
                         // All other endpoints require authentication
@@ -42,7 +48,9 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                )
+                // Add JWT filter BEFORE Spring Security's default filter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -50,8 +58,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Allow requests from anywhere (we'll restrict this later for production)
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

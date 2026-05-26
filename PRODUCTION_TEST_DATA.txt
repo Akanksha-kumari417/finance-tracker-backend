@@ -1,0 +1,35 @@
+=== PRODUCTION BACKEND ===
+
+Live URL: https://finance-tracker-backend-segu.onrender.com
+
+Test Account (Demo User):
+Email: demo@financetracker.com
+Password: demo123
+Token: [paste token here]
+
+Sample Data Created:
+- 2 Income transactions (Total: $5800)
+- 6 Expense transactions (Total: $2400.50)
+- Balance: $3399.50
+
+Categories Used:
+- Salary
+- Freelance
+- Bills
+- Food
+- Entertainment
+- Transport
+- Shopping
+
+API Endpoints Working:
+✅ POST /api/auth/register
+✅ POST /api/auth/login
+✅ POST /api/transactions
+✅ GET /api/transactions
+✅ GET /api/transactions/{id}
+✅ PUT /api/transactions/{id}
+✅ DELETE /api/transactions/{id}
+✅ GET /api/transactions/summary
+✅ GET /api/transactions/category/{category}
+
+Next Step: Build React frontend to connect to this API

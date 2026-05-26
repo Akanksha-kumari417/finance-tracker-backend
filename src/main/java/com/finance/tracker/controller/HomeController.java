@@ -1,36 +1,42 @@
 package com.finance.tracker.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
 public class HomeController {
 
     @GetMapping("/")
-    public ResponseEntity<Map<String, Object>> home() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Finance Tracker API");
-        response.put("status", "running");
+    public Map<String, Object> home() {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("application", "Finance Tracker API");
+        response.put("status", "Running");
         response.put("version", "1.0.0");
         response.put("timestamp", LocalDateTime.now().toString());
-        response.put("endpoints", Map.of(
-                "register", "/api/auth/register",
-                "login", "/api/auth/login",
-                "test", "/api/test/hello",
-                "health", "/health"
-        ));
-        return ResponseEntity.ok(response);
+
+        Map<String, String> endpoints = new LinkedHashMap<>();
+        endpoints.put("health", "/health");
+        endpoints.put("test", "/api/test/hello");
+        endpoints.put("register", "POST /api/auth/register");
+        endpoints.put("login", "POST /api/auth/login");
+        endpoints.put("transactions", "GET /api/transactions (requires auth)");
+
+        response.put("endpoints", endpoints);
+        response.put("documentation", "https://github.com/YOUR_USERNAME/finance-tracker-backend");
+
+        return response;
     }
 
     @GetMapping("/health")
-    public ResponseEntity<Map<String, String>> health() {
-        Map<String, String> response = new HashMap<>();
+    public Map<String, Object> health() {
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("status", "UP");
-        return ResponseEntity.ok(response);
+        response.put("database", "Connected");
+        response.put("timestamp", System.currentTimeMillis());
+        return response;
     }
 }
